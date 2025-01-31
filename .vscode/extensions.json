@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    // Formatter & Prettier
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+
+    // Linting & Code Quality
+    "usernamehw.errorlens",
+    "streetsidesoftware.code-spell-checker",
+
+    // Show todo
+    "gruntfuggly.todo-tree"
+  ]
+}
