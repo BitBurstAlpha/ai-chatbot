@@ -1,14 +1,14 @@
 # compiled output
-/dist
-/build
-/public/build
+dist
+build
+public/build
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # testing
-/coverage
+coverage
 
 # Logs
 logs
@@ -44,10 +44,15 @@ pids
 *.pid
 *.seed
 *.pid.lock
+*.pem
+.pnp
+.pnp.js
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # IDE
 .idea/
+
+# vercel
 .vercel
