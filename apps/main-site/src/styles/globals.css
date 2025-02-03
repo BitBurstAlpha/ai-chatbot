@@ -1,3 +1,67 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Surface Colors */
+  --surface-color-surface: hsl(215, 75%, 15%);
+  --surface-color-surface-hovered: hsl(215, 75%, 15%);
+  --surface-color-surface-pressed: hsl(212, 100%, 80%);
+
+  /* Background Colors */
+  --background-color-background-brand: hsl(240, 45%, 6%);
+  --background-color-background-brand-hovered: hsla(220, 56%, 20%, 0.6);
+  --background-color-background-brand-pressed: hsla(220, 56%, 20%, 0.4);
+  --background-color-background-disabled: hsl(210, 15%, 15%);
+
+  /* Text Colors */
+  --text-color-text: hsl(0, 0%, 96%);
+  --text-color-text-inverse: hsl(210, 20%, 13%);
+  --text-color-text-disabled: hsl(0, 0%, 43%);
+  --text-color-text-subtle: hsl(0, 0%, 53%);
+  --text-color-text-subtlest: hsl(0, 0%, 69%);
+  --text-color-text-brand: hsl(220, 83%, 53%);
+  --text-color-text-selected: hsl(162, 63%, 51%);
+  --text-color-text-success: hsl(148, 58%, 50%);
+  --text-color-text-warning: hsl(0, 70%, 52%);
+  --text-color-text-danger: hsl(0, 70%, 52%);
+
+  /* Link Colors */
+  --link-color-link: hsl(216, 90%, 58%);
+  --link-color-link-hovered: hsl(212, 100%, 80%);
+  --link-color-link-pressed: hsl(212, 100%, 80%);
+
+  /* Border Colors */
+  --border-color-border: hsl(221, 83%, 53%);
+  --border-color-border-brand: hsl(215, 75%, 15%);
+  --border-color-border-disabled: hsl(0, 0%, 36%);
+  --border-color-border-focused: hsla(220, 56%, 20%, 0.4);
+  --border-color-border-input: hsl(0, 0%, 53%);
+  --border-color-border-inverse: hsl(0, 0%, 100%);
+  --border-color-border-success: hsl(148, 58%, 50%);
+  --border-color-border-warning: hsl(0, 70%, 52%);
+  --border-color-border-danger: hsl(0, 70%, 52%);
+
+  /* Icon Colors */
+  --icon-color-icon: hsl(0, 0%, 96%);
+  --icon-color-inverse: hsl(0, 0%, 0%);
+  --icon-color-brand: hsl(220, 83%, 53%);
+  --icon-color-icon-information: hsl(212, 100%, 80%);
+  --icon-color-icon-success: hsl(148, 58%, 50%);
+  --icon-color-icon-warning: hsl(0, 70%, 52%);
+  --icon-color-icon-danger: hsl(0, 70%, 52%);
+  --icon-color-icon-discovery: hsl(152, 82%, 40%);
+  --icon-color-icon-disabled: hsl(0, 0%, 43%);
+
+  /* Gradient Colors */
+  --gradient-gradient_01-0: hsla(210, 100%, 60%, 0.1);
+  --gradient-gradient_01-100: hsla(210, 100%, 60%, 0.2);
+  --gradient-cardType01-100: hsla(240, 45%, 6%, 0.1);
+  --gradient-cardType01-200: hsla(230, 73%, 50%, 0.1);
+}
+
+@layer base {
+  body {
+    @apply bg-background-brand text-text font-inter;
+  }
+}
