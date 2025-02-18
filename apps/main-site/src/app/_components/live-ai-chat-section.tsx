@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export function LiveAIChatSection() {
   return (
-    <section className="pb-32 max-w-screen-lg mx-auto overflow-hidden relative">
+    <section className="max-w-screen-lg mx-auto overflow-hidden relative">
       <div className="relative w-full flex">
         <div className="relative z-10 rounded-lg flex flex-col lg:flex-row items-center bg-background-brand-hovered justify-between w-full min-h-96 px-10 space-x-4">
           {/* Left Content */}

@@ -70,7 +70,7 @@ const secondRow = reviews.slice(reviews.length / 2);
 
 export function Testimonials() {
   return (
-    <section className="pb-32 ">
+    <section>
       <div className="relative max-w-screen-lg mx-auto text-center space-y-8">
         <div className="space-y-4">
           <div className="inline-flex bg-[#99C9FF]/10 group rounded-full border text-base text-white transition-all ease-in hover:cursor-pointer  border-border ">

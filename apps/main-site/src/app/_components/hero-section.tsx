@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export function HeroSection() {
   return (
-    <section className="py-32">
+    <section>
       <div className="relative">
         <div className="relative max-w-screen-lg mx-auto text-center space-y-8">
           <div className="space-y-4">
