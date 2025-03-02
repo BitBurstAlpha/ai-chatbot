@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
-import { Geist } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+import { Header } from '@/components/header/header';
+import Footer from '@/components/footer/footer';
+
+const inter = Inter({
+  variable: '--font-inter-sans',
   subsets: ['latin'],
 });
 
@@ -19,7 +22,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable}  antialiased`}>{children}</body>
+      <body className={`${inter.variable}  antialiased`}>
+        <>
+          <Header />
+
+          {children}
+
+          <Footer />
+        </>
+      </body>
     </html>
   );
 }
