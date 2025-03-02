@@ -6,7 +6,7 @@ This project focuses on developing an AI-driven customer service chatbot integra
 
 ## Architecture of the system
 
-![alt text](https://res.cloudinary.com/dwddaxdaf/image/upload/v1737970828/system-design_rl8cpl.jpg)
+![architecture ](https://res.cloudinary.com/wiz-images/image/upload/v1737970828/system-design_rl8cpl.jpg)
 
 ---
 
