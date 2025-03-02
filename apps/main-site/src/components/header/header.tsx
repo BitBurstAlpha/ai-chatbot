@@ -98,8 +98,14 @@ export const Header = () => {
 
             {/* Auth Buttons */}
             <div className="flex items-center space-x-4">
-              <Button variant="ghost">Sign in</Button>
-              <Button>Sign-Up</Button>
+              <Link href="/login" passHref>
+                <Button variant="ghost">Sign in</Button>
+              </Link>
+
+              <Link href="/register" passHref>
+                {' '}
+                <Button>Sign-Up</Button>
+              </Link>
             </div>
           </nav>
         </header>
