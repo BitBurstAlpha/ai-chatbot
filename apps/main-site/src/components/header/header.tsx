@@ -1,5 +1,36 @@
 import Link from 'next/link';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu';
+
 import { Button } from '../ui/button';
+import React from 'react';
+import { cn } from '@/lib/utils';
+
+const serviceLinks: { title: string; href: string }[] = [
+  {
+    title: 'Chatbot',
+    href: '/chatbot',
+  },
+  {
+    title: 'Tickets',
+    href: '/tickets',
+  },
+  {
+    title: 'Elements',
+    href: '/elements',
+  },
+  {
+    title: 'Email Support',
+    href: '/email-support',
+  },
+];
 
 export const Header = () => {
   return (
@@ -13,42 +44,56 @@ export const Header = () => {
             </Link>
 
             {/* Navigation Links */}
-            <div className="flex items-center space-x-6 text-sm bg-[#99C9FF]/10 px-8 py-3 border-border border rounded-full">
-              <div className="flex items-center space-x-8">
-                {/* Product Dropdown */}
-                <div className="relative group">
-                  <button className="text-gray-300 hover:text-white flex items-center space-x-1">
-                    <span>Product</span>
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </button>
-                </div>
+            <div className="hidden md:flex items-center space-x-6 text-sm bg-[#99C9FF]/10 px-8 py-3 border-border border rounded-full ">
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger>Services</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="p-4 min-w-40 bg-surface border-0 ring-0">
+                        {serviceLinks.map((service) => (
+                          <ListItem
+                            key={service.title}
+                            title={service.title}
+                            href={service.href}
+                          />
+                        ))}
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem></NavigationMenuItem>
 
-                {/* Other Nav Links */}
-                <Link href="/about" className="text-gray-300 hover:text-white">
-                  About
-                </Link>
-                <Link href="/docs" className="text-gray-300 hover:text-white">
-                  Docs
-                </Link>
-                <Link
-                  href="/pricing"
-                  className="text-gray-300 hover:text-white"
-                >
-                  Pricing
-                </Link>
-              </div>
+                  <NavigationMenuItem>
+                    <Link href="/about" legacyBehavior passHref>
+                      <NavigationMenuLink
+                        className={navigationMenuTriggerStyle()}
+                      >
+                        About
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <Link href="/docs" legacyBehavior passHref>
+                      <NavigationMenuLink
+                        className={navigationMenuTriggerStyle()}
+                      >
+                        Docs
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <Link href="/pricing" legacyBehavior passHref>
+                      <NavigationMenuLink
+                        className={navigationMenuTriggerStyle()}
+                      >
+                        Pricing
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
             </div>
 
             {/* Auth Buttons */}
@@ -62,3 +107,26 @@ export const Header = () => {
     </div>
   );
 };
+
+const ListItem = React.forwardRef<
+  React.ComponentRef<'a'>,
+  React.ComponentPropsWithoutRef<'a'>
+>(({ className, title, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-surface-hovered hover:text-text-brand focus:bg-accent focus:text-text-brand',
+            className,
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
+ListItem.displayName = 'ListItem';
