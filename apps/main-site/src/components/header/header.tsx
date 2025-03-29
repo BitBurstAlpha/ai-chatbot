@@ -38,13 +38,18 @@ export const Header = () => {
       <div className="pt-8">
         <header className="max-w-7xl mx-auto bg-gradient-to-b rounded-lg from-[#09091D] to-[#09091D]">
           <nav className="flex items-center justify-between h-20 px-8">
+            <div className="flex items-center ">
+
+
+
             {/* Logo */}
+
             <Link href="/" className="text-blue-500 text-xl font-bold">
               Lexi.AI
             </Link>
 
             {/* Navigation Links */}
-            <div className="hidden md:flex items-center space-x-6 text-sm bg-[#99C9FF]/10 px-8 py-3 border-border border rounded-full ">
+            <div className="hidden md:flex items-center space-x-6 text-sm  px-8 py-3  ">
               <NavigationMenu>
                 <NavigationMenuList>
                   <NavigationMenuItem>
@@ -95,7 +100,7 @@ export const Header = () => {
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
-
+            </div>
             {/* Auth Buttons */}
             <div className="flex items-center space-x-4">
               <Link href="/login" passHref>
