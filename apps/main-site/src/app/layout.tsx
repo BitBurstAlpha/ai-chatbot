@@ -4,6 +4,7 @@ import '@/styles/globals.css';
 
 import { Header } from '@/components/header/header';
 import Footer from '@/components/footer/footer';
+import ChatbotUI from '@/components/ai-chatbot/chat-bot-ui';
 
 const inter = Inter({
   variable: '--font-inter-sans',
@@ -27,7 +28,7 @@ export default function RootLayout({
           <Header />
 
           {children}
-
+          <ChatbotUI />
           <Footer />
         </>
       </body>
