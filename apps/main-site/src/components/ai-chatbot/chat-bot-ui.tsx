@@ -217,7 +217,7 @@ export default function ChatbotUI() {
       ) : (
         <Button
           onClick={toggleChat}
-          className="h-14 w-14 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white"
+          className="h-14 w-14 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white [&_svg]:size-8"
         >
           <BotMessageSquare className="rounded-full" />
         </Button>
