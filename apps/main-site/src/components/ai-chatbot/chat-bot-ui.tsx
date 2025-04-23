@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { SendIcon, X, BotMessageSquareIcon } from 'lucide-react';
+import { SendIcon, X, BotMessageSquare } from 'lucide-react';
 
 export default function ChatbotUI() {
   const [isOpen, setIsOpen] = useState(false);
@@ -219,9 +219,7 @@ export default function ChatbotUI() {
           onClick={toggleChat}
           className="h-14 w-14 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white"
         >
-          <Avatar className="h-12 w-12 flex items-center justify-center">
-            <BotMessageSquareIcon className="rounded-full h-10 w-10" />
-          </Avatar>
+          <BotMessageSquare className="rounded-full" />
         </Button>
       )}
     </div>
