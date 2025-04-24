@@ -203,7 +203,7 @@ export default function KnowledgePage() {
     : knowledgeItems;
 
   const EmptyState = () => (
-    <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)] text-center">
+    <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)] text-center">
       <div className="bg-[#161C2C] p-8 rounded-xl mb-6">
         <FileText size={80} className="text-blue-400 mx-auto" />
       </div>
