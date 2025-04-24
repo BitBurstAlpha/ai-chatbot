@@ -26,6 +26,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  register: (email: string, password: string) => Promise<void>;
   error: string | null;
 }
 
@@ -158,6 +159,40 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const register = async (email: string, password: string) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        'https://web-production-59b12.up.railway.app/api/v1/auth/register',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        },
+      );
+
+      if (response.status !== 201) {
+        const errorData = await response.json();
+
+        toast(errorData.message || 'Register failed');
+      }
+
+      toast.success('user register success');
+
+      // Redirect to home page
+      router.push('/login');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'Login failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     // Clear from cookies
     Cookies.remove('authToken', { path: '/' });
@@ -171,6 +206,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading,
     isAuthenticated,
     login,
+    register,
     logout,
     error,
   };
