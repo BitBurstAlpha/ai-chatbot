@@ -51,7 +51,7 @@ export default function ChatbotUI() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            knowledge_ids: ['6552b48a-c221-49f6-86ec-021a09a4b8a0'],
+            knowledge_ids: ['e100438f-7ad2-4241-bade-59f88a80f7f6'],
             query: userQuery,
           }),
         },

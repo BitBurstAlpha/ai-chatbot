@@ -39,67 +39,68 @@ export const Header = () => {
         <header className="max-w-7xl mx-auto bg-gradient-to-b rounded-lg from-[#09091D] to-[#09091D]">
           <nav className="flex items-center justify-between h-20 px-8">
             <div className="flex items-center ">
+              {/* Logo */}
 
+              <Link href="/" className="text-blue-500 text-xl font-bold">
+                Lexi.AI
+              </Link>
 
+              {/* Navigation Links */}
+              <div className="hidden md:flex items-center space-x-6 text-sm  px-8 py-3  ">
+                <NavigationMenu>
+                  <NavigationMenuList>
+                    <NavigationMenuItem>
+                      <NavigationMenuTrigger>Services</NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <ul className="p-4 min-w-40 bg-surface border-0 ring-0">
+                          {serviceLinks.map((service) => (
+                            <ListItem
+                              key={service.title}
+                              title={service.title}
+                              href={service.href}
+                            />
+                          ))}
+                        </ul>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem></NavigationMenuItem>
 
-            {/* Logo */}
+                    <NavigationMenuItem>
+                      <Link href="/about" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          About
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
 
-            <Link href="/" className="text-blue-500 text-xl font-bold">
-              Lexi.AI
-            </Link>
-
-            {/* Navigation Links */}
-            <div className="hidden md:flex items-center space-x-6 text-sm  px-8 py-3  ">
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger>Services</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="p-4 min-w-40 bg-surface border-0 ring-0">
-                        {serviceLinks.map((service) => (
-                          <ListItem
-                            key={service.title}
-                            title={service.title}
-                            href={service.href}
-                          />
-                        ))}
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem></NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <Link href="/about" legacyBehavior passHref>
-                      <NavigationMenuLink
-                        className={navigationMenuTriggerStyle()}
+                    <NavigationMenuItem>
+                      <Link
+                        href="https://lexi-doc.devoscape.com/"
+                        legacyBehavior
+                        passHref
                       >
-                        About
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
+                        <NavigationMenuLink
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          Docs
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
 
-                  <NavigationMenuItem>
-                    <Link href="/docs" legacyBehavior passHref>
-                      <NavigationMenuLink
-                        className={navigationMenuTriggerStyle()}
-                      >
-                        Docs
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <Link href="/pricing" legacyBehavior passHref>
-                      <NavigationMenuLink
-                        className={navigationMenuTriggerStyle()}
-                      >
-                        Pricing
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-            </div>
+                    <NavigationMenuItem>
+                      <Link href="/pricing" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          Pricing
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
+              </div>
             </div>
             {/* Auth Buttons */}
             <div className="flex items-center space-x-4">
