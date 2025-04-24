@@ -421,115 +421,120 @@ export default function KnowledgePage() {
               : "Manage your AI assistant's knowledge and training data"}
           </p>
         </div>
-        <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-4 py-2">
-              <Plus size={16} className="mr-2" />
-              Add knowledge
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md bg-[#0F1624] border border-[#1E2A42] text-white">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold">
-                Upload Knowledge Document
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              {selectedFile ? (
-                <div className="bg-[#161C2C] p-4 rounded-md border border-[#1E2A42] flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <File className="text-blue-400" />
-                    <div>
-                      <p className="text-sm font-medium">{selectedFile.name}</p>
-                      <p className="text-xs text-gray-400">
-                        {(selectedFile.size / 1024).toFixed(2)} KB
-                      </p>
+
+        {user?.role === 'user' ? (
+          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-4 py-2">
+                <Plus size={16} className="mr-2" />
+                Add knowledge
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md bg-[#0F1624] border border-[#1E2A42] text-white">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold">
+                  Upload Knowledge Document
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                {selectedFile ? (
+                  <div className="bg-[#161C2C] p-4 rounded-md border border-[#1E2A42] flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <File className="text-blue-400" />
+                      <div>
+                        <p className="text-sm font-medium">
+                          {selectedFile.name}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          {(selectedFile.size / 1024).toFixed(2)} KB
+                        </p>
+                      </div>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-gray-400 hover:text-white p-1 h-6 w-6"
+                      onClick={() => setSelectedFile(null)}
+                    >
+                      <X size={14} />
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-gray-400 hover:text-white p-1 h-6 w-6"
-                    onClick={() => setSelectedFile(null)}
+                ) : (
+                  <div
+                    className="border-2 border-dashed border-[#1E2A42] rounded-md p-8 text-center hover:border-blue-500 transition-colors cursor-pointer"
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
                   >
-                    <X size={14} />
-                  </Button>
-                </div>
-              ) : (
-                <div
-                  className="border-2 border-dashed border-[#1E2A42] rounded-md p-8 text-center hover:border-blue-500 transition-colors cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                  onDragOver={handleDragOver}
-                  onDrop={handleDrop}
-                >
-                  <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <p className="text-sm text-gray-300 mb-2">
-                    Click or drag to upload
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    PDF, DOC, TXT, CSV files supported
-                  </p>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    onChange={handleFileSelect}
-                    accept=".pdf,.doc,.docx,.txt,.csv"
+                    <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <p className="text-sm text-gray-300 mb-2">
+                      Click or drag to upload
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      PDF, DOC, TXT, CSV files supported
+                    </p>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      onChange={handleFileSelect}
+                      accept=".pdf,.doc,.docx,.txt,.csv"
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-gray-300">
+                    Document Title
+                  </Label>
+                  <Input
+                    id="title"
+                    placeholder="Enter document title"
+                    className="bg-[#161C2C] border-[#1E2A42] text-white"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                   />
                 </div>
-              )}
 
-              <div className="space-y-2">
-                <Label htmlFor="title" className="text-gray-300">
-                  Document Title
-                </Label>
-                <Input
-                  id="title"
-                  placeholder="Enter document title"
-                  className="bg-[#161C2C] border-[#1E2A42] text-white"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-gray-300">
+                    Description (Optional)
+                  </Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Enter document description"
+                    className="bg-[#161C2C] border-[#1E2A42] text-white min-h-[100px]"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description" className="text-gray-300">
-                  Description (Optional)
-                </Label>
-                <Textarea
-                  id="description"
-                  placeholder="Enter document description"
-                  className="bg-[#161C2C] border-[#1E2A42] text-white min-h-[100px]"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3">
-              <DialogClose asChild>
+              <div className="flex justify-end gap-3">
+                <DialogClose asChild>
+                  <Button
+                    variant="ghost"
+                    className="text-gray-300 hover:text-white"
+                    onClick={resetUploadForm}
+                  >
+                    Cancel
+                  </Button>
+                </DialogClose>
                 <Button
-                  variant="ghost"
-                  className="text-gray-300 hover:text-white"
-                  onClick={resetUploadForm}
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={handleUpload}
+                  disabled={isUploading || !selectedFile || !title.trim()}
                 >
-                  Cancel
+                  {isUploading
+                    ? 'Uploading...'
+                    : isUploaded
+                      ? 'Uploaded!'
+                      : 'Upload'}
                 </Button>
-              </DialogClose>
-              <Button
-                className="bg-blue-600 hover:bg-blue-700"
-                onClick={handleUpload}
-                disabled={isUploading || !selectedFile || !title.trim()}
-              >
-                {isUploading
-                  ? 'Uploading...'
-                  : isUploaded
-                    ? 'Uploaded!'
-                    : 'Upload'}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+              </div>
+            </DialogContent>
+          </Dialog>
+        ) : null}
       </div>
 
       <div className="flex justify-between mb-6">

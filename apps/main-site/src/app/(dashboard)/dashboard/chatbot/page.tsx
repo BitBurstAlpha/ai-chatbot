@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import {
   Dialog,
   DialogContent,
@@ -241,17 +242,19 @@ export default function ChatbotPage() {
                     <Checkbox />
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-[#1A1F35] rounded-md flex items-center justify-center">
-                        <Bot size={16} className="text-gray-400" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-white">
-                          {chatbot.name}
+                    <Link href={`/dashboard/chatbot/${chatbot.id}`}>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-[#1A1F35] rounded-md flex items-center justify-center">
+                          <Bot size={16} className="text-gray-400" />
                         </div>
-                        <div className="text-xs text-gray-500">Chatbot</div>
+                        <div>
+                          <div className="font-medium text-white">
+                            {chatbot.name}
+                          </div>
+                          <div className="text-xs text-gray-500">Chatbot</div>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </TableCell>
                   <TableCell>
                     <span

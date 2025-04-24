@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { toast } from 'sonner';
 
 export type UserRole = 'admin' | 'user' | 'agent';
 
@@ -76,7 +77,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
               Cookies.remove('authToken', { path: '/' });
             }
           } catch (err) {
-            console.error('Failed to fetch user data:', err);
+            toast('Failed to fetch user data:' + err);
             Cookies.remove('authToken', { path: '/' });
           }
         }
@@ -113,7 +114,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
+
+        toast(errorData.message || 'Login failed');
       }
 
       const data = await response.json();
@@ -143,6 +145,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       const userData = await userResponse.json();
       setUser(userData);
+
+      toast.success('login success');
 
       // Redirect to home page
       router.push('/dashboard/home');
