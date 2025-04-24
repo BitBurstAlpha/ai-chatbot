@@ -145,7 +145,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(userData);
 
       // Redirect to home page
-      router.push('/home');
+      router.push('/dashboard/home');
     } catch (err) {
       console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Login failed');

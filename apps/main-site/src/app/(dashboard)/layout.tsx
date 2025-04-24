@@ -65,57 +65,57 @@ export default function DashboardLayout({
             icon={<Home size={18} />}
             label="HOME"
             collapsed={collapsed}
-            active={pathname === '/home'}
-            href="/home"
+            active={pathname === '/dashboard/home'}
+            href="/dashboard/home"
           />
           <NavItem
             icon={<Activity size={18} />}
             label="ACTIVITY"
             collapsed={collapsed}
-            active={pathname === '/activity'}
-            href="/activity"
+            active={pathname === '/dashboard/activity'}
+            href="/dashboard/activity"
           />
           <NavItem
             icon={<BookOpen size={18} />}
             label="KNOWLEDGE"
             collapsed={collapsed}
-            active={pathname === '/knowledge'}
-            href="/knowledge"
+            active={pathname === '/dashboard/knowledge'}
+            href="/dashboard/knowledge"
           />
           <NavItem
             icon={<MessageCircle size={18} />}
             label="CHATBOT"
             collapsed={collapsed}
-            active={pathname === '/chatbot'}
-            href="/chatbot"
+            active={pathname === '/dashboard/chatbot'}
+            href="/dashboard/chatbot"
           />
           <NavItem
             icon={<FileText size={18} />}
             label="TICKETS"
             collapsed={collapsed}
-            active={pathname === '/tickets'}
-            href="/tickets"
+            active={pathname === '/dashboard/tickets'}
+            href="/dashboard/tickets"
           />
           <NavItem
             icon={<Mail size={18} />}
             label="MAILS"
             collapsed={collapsed}
-            active={pathname === '/mails'}
-            href="/mails"
+            active={pathname === '/dashboard/mails'}
+            href="/dashboard/mails"
           />
           <NavItem
             icon={<Webhook size={18} />}
             label="WEBHOOKS"
             collapsed={collapsed}
-            active={pathname === '/webhooks'}
-            href="/webhooks"
+            active={pathname === '/dashboard/webhooks'}
+            href="/dashboard/webhooks"
           />
           <NavItem
             icon={<Layers size={18} />}
             label="INTEGRATIONS"
             collapsed={collapsed}
-            active={pathname === '/integrations'}
-            href="/integrations"
+            active={pathname === '/dashboard/integrations'}
+            href="/dashboard/integrations"
           />
         </div>
 

@@ -34,7 +34,7 @@ export default function Login() {
   useEffect(() => {
     // If already authenticated, redirect to callback URL or dashboard
     if (isAuthenticated && !isLoading) {
-      router.push('/home');
+      router.push('/dashboard/home');
     }
   }, [isAuthenticated, isLoading, router]);
 
