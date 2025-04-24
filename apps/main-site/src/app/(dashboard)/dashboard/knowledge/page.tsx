@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, ChangeEvent, DragEvent } from 'react';
+import { useState, useRef, useEffect, ChangeEvent, DragEvent } from 'react';
 import {
   FileText,
   Upload,
@@ -26,14 +26,18 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import Cookies from 'js-cookie';
+import { useAuth } from '@/context/auth-context';
 
 interface KnowledgeItem {
-  id: string | number;
+  id: string;
   title: string;
   description: string;
-  fileName: string;
-  fileType: string;
-  dateUploaded: string;
+  original_filename: string;
+  file_type: string;
+  file_size: number;
+  created_at: string;
+  user_id: string;
 }
 
 export default function KnowledgePage() {
@@ -44,7 +48,50 @@ export default function KnowledgePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [knowledgeItems, setKnowledgeItems] = useState<KnowledgeItem[]>([]);
   const [isUploaded, setIsUploaded] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { user } = useAuth();
+
+  // Fetch knowledge items based on user role
+  useEffect(() => {
+    const fetchKnowledgeItems = async () => {
+      setIsLoading(true);
+      try {
+        const token = Cookies.get('authToken');
+
+        if (!token) {
+          console.error('No authentication token found');
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await fetch(
+          'https://web-production-59b12.up.railway.app/api/v1/knowledge',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setKnowledgeItems(data);
+        } else {
+          console.error('Failed to fetch knowledge items');
+        }
+      } catch (error) {
+        console.error('Error fetching knowledge items:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchKnowledgeItems();
+    }
+  }, [user]);
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -79,27 +126,40 @@ export default function KnowledgePage() {
     formData.append('description', description);
 
     try {
+      const token = Cookies.get('authToken');
+      if (!token) {
+        console.error('No authentication token found');
+        setIsUploading(false);
+        return;
+      }
+
       const response = await fetch(
         'https://web-production-59b12.up.railway.app/api/v1/knowledge/upload',
         {
           method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: formData,
         },
       );
 
       if (response.ok) {
-        const result = await response.json();
-        setKnowledgeItems([
-          ...knowledgeItems,
+        // Fetch updated knowledge list
+        const updatedResponse = await fetch(
+          'https://web-production-59b12.up.railway.app/api/v1/knowledge',
           {
-            id: result.id || Date.now(),
-            title,
-            description,
-            fileName: selectedFile.name,
-            fileType: selectedFile.type,
-            dateUploaded: new Date().toISOString(),
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        ]);
+        );
+
+        if (updatedResponse.ok) {
+          const updatedData = await updatedResponse.json();
+          setKnowledgeItems(updatedData);
+        }
+
         setIsUploaded(true);
 
         // Reset form after 2 seconds
@@ -132,6 +192,15 @@ export default function KnowledgePage() {
     setTitle('');
     setDescription('');
   };
+
+  const filteredItems = searchQuery
+    ? knowledgeItems.filter(
+        (item) =>
+          item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (item.description &&
+            item.description.toLowerCase().includes(searchQuery.toLowerCase())),
+      )
+    : knowledgeItems;
 
   const EmptyState = () => (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)] text-center">
@@ -262,39 +331,43 @@ export default function KnowledgePage() {
     docs,
     other,
   }: { pdfs?: boolean; docs?: boolean; other?: boolean } = {}) => {
-    let filteredItems = knowledgeItems;
+    let displayItems = filteredItems;
 
     if (pdfs) {
-      filteredItems = knowledgeItems.filter(
-        (item) => item.fileType === 'application/pdf',
+      displayItems = filteredItems.filter(
+        (item) => item.file_type === 'application/pdf',
       );
     } else if (docs) {
-      filteredItems = knowledgeItems.filter(
+      displayItems = filteredItems.filter(
         (item) =>
-          item.fileType === 'application/msword' ||
-          item.fileType ===
+          item.file_type === 'application/msword' ||
+          item.file_type ===
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       );
     } else if (other) {
-      filteredItems = knowledgeItems.filter(
+      displayItems = filteredItems.filter(
         (item) =>
-          item.fileType !== 'application/pdf' &&
-          item.fileType !== 'application/msword' &&
-          item.fileType !==
+          item.file_type !== 'application/pdf' &&
+          item.file_type !== 'application/msword' &&
+          item.file_type !==
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       );
     }
 
+    if (displayItems.length === 0) {
+      return <EmptyState />;
+    }
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-        {filteredItems.map((item) => (
+        {displayItems.map((item) => (
           <div
             key={item.id}
             className="bg-[#161C2C] rounded-lg p-4 border border-[#1E2A42] hover:border-blue-500 transition-all"
           >
             <div className="flex justify-between items-start mb-3">
               <div className="bg-[#1E2A42] p-2 rounded">
-                {getFileIcon(item.fileType)}
+                {getFileIcon(item.file_type)}
               </div>
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <ChevronDown size={16} />
@@ -306,9 +379,18 @@ export default function KnowledgePage() {
                 {item.description}
               </p>
             )}
-            <div className="flex items-center text-xs text-gray-500">
-              <Clock size={12} className="mr-1" />
-              <span>{new Date(item.dateUploaded).toLocaleDateString()}</span>
+            <div className="flex flex-col text-xs text-gray-500">
+              <div className="flex items-center mb-1">
+                <Clock size={12} className="mr-1" />
+                <span>{new Date(item.created_at).toLocaleDateString()}</span>
+              </div>
+              {user?.role === 'admin' && (
+                <div className="text-blue-400 text-xs">
+                  {item.user_id === user.id
+                    ? 'Uploaded by you'
+                    : 'Uploaded by another user'}
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -316,13 +398,27 @@ export default function KnowledgePage() {
     );
   };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex-1 overflow-auto bg-[#0D1117] text-white p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          <p className="mt-4">Loading knowledge base...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 overflow-auto bg-[#0D1117] text-white p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold mb-1">Knowledge Base</h1>
           <p className="text-gray-400">
-            Manage your AI assistant&apos;s knowledge and training data
+            {user?.role === 'admin'
+              ? 'Manage all knowledge and training data'
+              : "Manage your AI assistant's knowledge and training data"}
           </p>
         </div>
         <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
@@ -443,12 +539,11 @@ export default function KnowledgePage() {
             type="search"
             placeholder="Search documents..."
             className="pl-10 bg-[#161C2C] border-[#1E2A42] text-gray-300 w-full h-10 rounded-md"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button
-          // variant="outline"
-          className="border-[#1E2A42] text-gray-300 hover:text-white"
-        >
+        <Button className="border-[#1E2A42] text-gray-300 hover:text-white">
           <Filter size={16} className="mr-2" />
           Filter
         </Button>
@@ -480,40 +575,16 @@ export default function KnowledgePage() {
         </TabsList>
 
         <TabsContent value="all" className="mt-0">
-          {knowledgeItems.length > 0 ? <KnowledgeList /> : <EmptyState />}
+          {filteredItems.length > 0 ? <KnowledgeList /> : <EmptyState />}
         </TabsContent>
         <TabsContent value="pdfs" className="mt-0">
-          {knowledgeItems.filter((item) => item.fileType === 'application/pdf')
-            .length > 0 ? (
-            <KnowledgeList pdfs />
-          ) : (
-            <EmptyState />
-          )}
+          <KnowledgeList pdfs />
         </TabsContent>
         <TabsContent value="docs" className="mt-0">
-          {knowledgeItems.filter(
-            (item) =>
-              item.fileType === 'application/msword' ||
-              item.fileType ===
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          ).length > 0 ? (
-            <KnowledgeList docs />
-          ) : (
-            <EmptyState />
-          )}
+          <KnowledgeList docs />
         </TabsContent>
         <TabsContent value="other" className="mt-0">
-          {knowledgeItems.filter(
-            (item) =>
-              item.fileType !== 'application/pdf' &&
-              item.fileType !== 'application/msword' &&
-              item.fileType !==
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          ).length > 0 ? (
-            <KnowledgeList other />
-          ) : (
-            <EmptyState />
-          )}
+          <KnowledgeList other />
         </TabsContent>
       </Tabs>
     </div>
