@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,7 @@ import {
   Globe,
   MessageSquare,
   MoreVertical,
+  Send,
 } from 'lucide-react';
 import {
   Table,
@@ -61,10 +62,18 @@ interface KnowledgeItem {
   user_id?: string;
 }
 
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+}
+
 export default function ChatbotDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { isLoading: authLoading } = useAuth();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [chatbot, setChatbot] = useState<Chatbot | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,6 +85,7 @@ export default function ChatbotDetailPage() {
   const [selectedKnowledgeId, setSelectedKnowledgeId] = useState<string>('');
   const [isAdding, setIsAdding] = useState(false);
   const [chatbotKnowledge, setChatbotKnowledge] = useState<KnowledgeItem[]>([]);
+  const [knowledgeIds, setKnowledgeIds] = useState<string[]>([]);
   const [hasKnowledge, setHasKnowledge] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [activeTab, setActiveTab] = useState<
@@ -86,6 +96,24 @@ export default function ChatbotDetailPage() {
     | 'settings'
     | 'install'
   >('knowledge');
+
+  // Chat state
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      role: 'assistant',
+      content:
+        "Hi there 👋\nI'm the AI Assistant!\nIs there anything I can help you with?",
+      timestamp: new Date(),
+    },
+  ]);
+  const [userInput, setUserInput] = useState('');
+  const [isProcessingMessage, setIsProcessingMessage] = useState(false);
+
+  // Scroll to bottom of messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -144,6 +172,13 @@ export default function ChatbotDetailPage() {
         if (chatbotKnowledgeResponse.ok) {
           const chatbotKnowledgeData = await chatbotKnowledgeResponse.json();
           setChatbotKnowledge(chatbotKnowledgeData);
+
+          // Extract knowledge IDs for querying
+          const ids = chatbotKnowledgeData.map(
+            (item: KnowledgeItem) => item.id,
+          );
+          setKnowledgeIds(ids);
+
           setHasKnowledge(chatbotKnowledgeData.length > 0);
           setShowTable(chatbotKnowledgeData.length > 0);
         }
@@ -157,6 +192,39 @@ export default function ChatbotDetailPage() {
 
     fetchData();
   }, [params.id, router, authLoading]);
+
+  const fetchChatbotKnowledge = async () => {
+    const token = Cookies.get('authToken');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    try {
+      const chatbotKnowledgeResponse = await fetch(
+        `https://web-production-59b12.up.railway.app/api/v1/chatbot/${params.id}/knowledge`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (chatbotKnowledgeResponse.ok) {
+        const chatbotKnowledgeData = await chatbotKnowledgeResponse.json();
+        setChatbotKnowledge(chatbotKnowledgeData);
+
+        // Update knowledge IDs
+        const ids = chatbotKnowledgeData.map((item: KnowledgeItem) => item.id);
+        setKnowledgeIds(ids);
+
+        setHasKnowledge(chatbotKnowledgeData.length > 0);
+        setShowTable(chatbotKnowledgeData.length > 0);
+      }
+    } catch (err) {
+      console.error('Error fetching chatbot knowledge:', err);
+    }
+  };
 
   const handleAddKnowledge = async () => {
     if (!selectedKnowledgeId) {
@@ -193,22 +261,7 @@ export default function ChatbotDetailPage() {
       }
 
       // Refresh knowledge data
-      const refreshResponse = await fetch(
-        `https://web-production-59b12.up.railway.app/api/v1/chatbot/${params.id}/knowledge`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (refreshResponse.ok) {
-        const refreshData = await refreshResponse.json();
-        setChatbotKnowledge(refreshData);
-        setHasKnowledge(refreshData.length > 0);
-        setShowTable(refreshData.length > 0);
-      }
-
+      await fetchChatbotKnowledge();
       setDialogOpen(false);
     } catch (err: unknown) {
       console.error('Error adding knowledge:', err);
@@ -219,6 +272,100 @@ export default function ChatbotDetailPage() {
       );
     } finally {
       setIsAdding(false);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!userInput.trim() || isProcessingMessage) return;
+
+    // Add user message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: userInput,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setUserInput('');
+    setIsProcessingMessage(true);
+
+    try {
+      const token = Cookies.get('authToken');
+      if (!token) {
+        throw new Error('Not authenticated');
+      }
+
+      // Only proceed with the API call if we have knowledge IDs
+      if (knowledgeIds.length === 0) {
+        // If no knowledge is associated, show a message about it
+        const noKnowledgeMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content:
+            "I don't have any knowledge yet. Please add some knowledge to help me answer your questions better.",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, noKnowledgeMessage]);
+        setIsProcessingMessage(false);
+        return;
+      }
+
+      // Make API call to query endpoint
+      const response = await fetch(
+        'https://web-production-59b12.up.railway.app/api/v1/query',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: userInput,
+            knowledge_ids: knowledgeIds,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to get a response');
+      }
+
+      const responseData = await response.json();
+
+      // Add assistant response
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content:
+          responseData.answer ||
+          "I couldn't find a relevant answer to your question.",
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+
+      // Add error message from assistant
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content:
+          "I'm sorry, I encountered an error while processing your request. Please try again later.",
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsProcessingMessage(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
     }
   };
 
@@ -627,7 +774,7 @@ export default function ChatbotDetailPage() {
             <Bot size={18} className="text-[#7C3AED]" />
           </div>
           <div>
-            <h3 className="font-medium">{chatbot?.name || 'Lexi.AI'}</h3>
+            <h3 className="font-medium">{chatbot?.name || 'AI Assistant'}</h3>
             <p className="text-xs opacity-75">Online</p>
           </div>
         </div>
@@ -635,23 +782,56 @@ export default function ChatbotDetailPage() {
         <div className="flex-1 overflow-y-auto p-4">
           <div className="mb-6">
             <h2 className="text-xl mb-4 font-medium">
-              Chat with {chatbot?.name || 'Lexi'}
+              Chat with {chatbot?.name || 'AI Assistant'}
             </h2>
 
-            <div className="flex mb-4">
-              <div className="w-8 h-8 bg-[#7C3AED] rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                <Bot size={16} className="text-white" />
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex mb-4 ${
+                  message.role === 'user' ? 'justify-end' : ''
+                }`}
+              >
+                {message.role === 'assistant' && (
+                  <div className="w-8 h-8 bg-[#7C3AED] rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                    <Bot size={16} className="text-white" />
+                  </div>
+                )}
+                <div
+                  className={`p-3 rounded-lg max-w-[80%] ${
+                    message.role === 'user'
+                      ? 'bg-[#7C3AED]/20 text-white'
+                      : 'bg-[#1A1F35] text-white'
+                  }`}
+                >
+                  <p className="text-sm whitespace-pre-line">
+                    {message.content}
+                  </p>
+                </div>
+                {message.role === 'user' && (
+                  <div className="w-8 h-8 bg-[#3730A3] rounded-full flex items-center justify-center ml-3 flex-shrink-0">
+                    <div className="text-white text-xs">You</div>
+                  </div>
+                )}
               </div>
-              <div className="bg-[#1A1F35] p-3 rounded-lg max-w-[80%]">
-                <p className="text-sm">
-                  Hi there 👋
-                  <br />
-                  I&apos;m the AI Assistant created by Lexi.ai!
-                  <br />
-                  Is there anything I can help you with?
-                </p>
+            ))}
+
+            {isProcessingMessage && (
+              <div className="flex mb-4">
+                <div className="w-8 h-8 bg-[#7C3AED] rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                  <Bot size={16} className="text-white" />
+                </div>
+                <div className="bg-[#1A1F35] p-3 rounded-lg">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce delay-100"></div>
+                    <div className="w-2 h-2 bg-[#7C3AED] rounded-full animate-bounce delay-200"></div>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
+
+            <div ref={messagesEndRef}></div>
           </div>
         </div>
 
@@ -660,23 +840,17 @@ export default function ChatbotDetailPage() {
             <Input
               placeholder="Type Your message here"
               className="bg-[#1A1F35] border-[#2D3148] text-white pr-10 py-6"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={isProcessingMessage}
             />
-            <Button className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-[#7C3AED] h-8 w-8 p-0 rounded-md">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M14.6667 1.33333L7.33333 8.66666M14.6667 1.33333L10 14.6667L7.33333 8.66666M14.6667 1.33333L1.33333 6L7.33333 8.66666"
-                  stroke="white"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            <Button
+              className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-[#7C3AED] h-8 w-8 p-0 rounded-md"
+              onClick={handleSendMessage}
+              disabled={isProcessingMessage || !userInput.trim()}
+            >
+              <Send size={16} className="text-white" />
             </Button>
           </div>
         </div>
