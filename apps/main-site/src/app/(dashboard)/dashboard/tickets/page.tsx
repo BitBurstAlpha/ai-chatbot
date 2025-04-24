@@ -18,6 +18,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useAuth } from '@/context/auth-context';
 import { Plus, MoreVertical, Ticket } from 'lucide-react';
 import Cookies from 'js-cookie';
@@ -29,6 +35,7 @@ interface TicketItem {
   status: 'Live' | 'Offline';
   created_by: string;
   created_at: string;
+  query: string; // Added description field
 }
 
 export default function TicketsPage() {
@@ -37,6 +44,10 @@ export default function TicketsPage() {
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // State for the ticket popup
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -96,6 +107,12 @@ export default function TicketsPage() {
     });
   };
 
+  // Function to open the ticket details modal
+  const handleOpenTicketDetails = (ticket: TicketItem) => {
+    setSelectedTicket(ticket);
+    setIsModalOpen(true);
+  };
+
   // Show loading state
   if (isLoading) {
     return (
@@ -137,7 +154,7 @@ export default function TicketsPage() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-xl font-semibold">Tickets</h1>
         <Button className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white flex items-center gap-2 rounded-md px-4">
-          <Plus size={16} /> Create Ticket!
+          <Plus size={16} /> Create Ticket
         </Button>
       </div>
 
@@ -180,9 +197,10 @@ export default function TicketsPage() {
               tickets.map((ticket) => (
                 <TableRow
                   key={ticket.id}
-                  className="border-b border-[#1A1F35] hover:bg-[#131625]"
+                  className="border-b border-[#1A1F35] hover:bg-[#131625] cursor-pointer"
+                  onClick={() => handleOpenTicketDetails(ticket)}
                 >
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <Checkbox />
                   </TableCell>
                   <TableCell>
@@ -221,7 +239,7 @@ export default function TicketsPage() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
@@ -232,7 +250,10 @@ export default function TicketsPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent className="bg-[#1C2033] border-[#2D3148] text-white">
-                        <DropdownMenuItem className="cursor-pointer hover:bg-[#2D3148]">
+                        <DropdownMenuItem
+                          className="cursor-pointer hover:bg-[#2D3148]"
+                          onClick={() => handleOpenTicketDetails(ticket)}
+                        >
                           View
                         </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer hover:bg-[#2D3148]">
@@ -250,6 +271,78 @@ export default function TicketsPage() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Ticket Details Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="bg-[#161C2C] border-[#2D3148] text-white max-w-md">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-lg font-semibold">
+                {selectedTicket?.name}
+              </DialogTitle>
+            </div>
+          </DialogHeader>
+
+          {selectedTicket && (
+            <div className="pt-2">
+              <div className="flex items-center gap-2 mb-4">
+                <span
+                  className={`px-2 py-1 rounded-full text-xs ${
+                    selectedTicket.status === 'Live'
+                      ? 'bg-green-900/20 text-green-500'
+                      : 'bg-gray-800 text-gray-400'
+                  }`}
+                >
+                  {selectedTicket.status}
+                </span>
+                <span className="text-xs text-gray-400">
+                  {selectedTicket.type}
+                </span>
+              </div>
+
+              <div className="mb-4">
+                <h3 className="text-sm font-medium text-gray-400 mb-1">
+                  Description
+                </h3>
+                <p className="text-sm text-white">
+                  {selectedTicket.query ||
+                    'No description available for this ticket.'}
+                </p>
+              </div>
+
+              <div className="mb-4">
+                <h3 className="text-sm font-medium text-gray-400 mb-1">
+                  Created By
+                </h3>
+                <p className="text-sm text-white">
+                  {selectedTicket.created_by}
+                </p>
+              </div>
+
+              <div className="mb-4">
+                <h3 className="text-sm font-medium text-gray-400 mb-1">
+                  Created At
+                </h3>
+                <p className="text-sm text-white">
+                  {formatDate(selectedTicket.created_at)}
+                </p>
+              </div>
+
+              <div className="flex gap-2 justify-end mt-6">
+                <Button
+                  className="border-[#2D3148] text-white hover:bg-[#2D3148] hover:text-white"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Close
+                </Button>
+                <Button className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white">
+                  Edit
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
