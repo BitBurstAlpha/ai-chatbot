@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -30,15 +30,13 @@ export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { login, isAuthenticated, error, isLoading } = useAuth();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/home';
 
   useEffect(() => {
     // If already authenticated, redirect to callback URL or dashboard
     if (isAuthenticated && !isLoading) {
-      router.push(callbackUrl);
+      router.push('/home');
     }
-  }, [isAuthenticated, isLoading, router, callbackUrl]);
+  }, [isAuthenticated, isLoading, router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
