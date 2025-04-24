@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { SendIcon, X, BotMessageSquare } from 'lucide-react';
+import TicketModal from '../ticket-modal';
 
 export default function ChatbotUI() {
   const [isOpen, setIsOpen] = useState(false);
@@ -116,13 +117,7 @@ export default function ChatbotUI() {
               >
                 FAQs
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white border-blue-500 bg-blue-500/10 hover:bg-blue-500/20"
-              >
-                New Chat
-              </Button>
+              <TicketModal />
             </div>
           </div>
 

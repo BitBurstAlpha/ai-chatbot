@@ -251,6 +251,9 @@ export default function ChatbotPage() {
                           <div className="font-medium text-white">
                             {chatbot.name}
                           </div>
+
+                          <CopyableId id={chatbot.id} />
+
                           <div className="text-xs text-gray-500">Chatbot</div>
                         </div>
                       </div>
@@ -316,5 +319,28 @@ export default function ChatbotPage() {
         </Table>
       </div>
     </div>
+  );
+}
+
+function CopyableId({ id }: {id :string}) {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(id);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy!', err);
+    }
+  };
+
+  return (
+    <button
+      onClick={copyToClipboard}
+      className="font-medium text-white hover:underline focus:outline-none"
+    >
+      {copied ? 'Copied!' : id}
+    </button>
   );
 }

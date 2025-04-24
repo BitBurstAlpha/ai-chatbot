@@ -24,6 +24,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 
+import { useAuth } from '@/context/auth-context';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
 interface NavItemProps {
   icon: ReactNode;
   label: string;
@@ -39,6 +48,8 @@ export default function DashboardLayout({
 }>) {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const pathname = usePathname();
+
+  const { logout } = useAuth();
 
   return (
     <div className="flex h-screen bg-[#0D1117] text-white">
@@ -192,9 +203,23 @@ export default function DashboardLayout({
             >
               <Bell size={18} />
             </Button>
-            <Avatar className="h-8 w-8 border border-[#2A3A51]">
-              <AvatarImage src="https://avatar.iran.liara.run/public/1" />
-            </Avatar>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Avatar className="h-8 w-8 border border-[#2A3A51]">
+                  <AvatarImage src="https://avatar.iran.liara.run/public/1" />
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => {
+                    logout();
+                  }}
+                >
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
