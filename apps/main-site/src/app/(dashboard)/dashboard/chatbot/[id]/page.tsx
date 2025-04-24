@@ -640,7 +640,7 @@ export default function ChatbotDetailPage() {
                           <TableCell>
                             <div>
                               <div className="font-medium text-white">
-                                Poorna Kawishla
+                                Dilshan Samarakoon
                               </div>
                               <div className="text-xs text-gray-500">
                                 {formatDate(item.created_at)}
