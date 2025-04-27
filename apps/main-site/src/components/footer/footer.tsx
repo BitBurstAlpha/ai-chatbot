@@ -120,7 +120,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="mt-8 text-center text-gray-400 text-sm">
-          <p>© Dilshan Samarakoon</p>
+          <p>powered by devoscape</p>
         </div>
       </div>
     </footer>
