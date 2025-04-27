@@ -61,9 +61,9 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">CONTACT</h3>
             <div className="space-y-2 text-gray-400">
-              <p>📞 +94 77 760 4869</p>
+              <p>📞 +94 78 2666 505</p>
               <p>💬 Whatsapp</p>
-              <p>📧 Info.poomalaawishthi@gmail.com</p>
+              <p>📧 info@devoscape.com</p>
               <p>🕒 24/7</p>
             </div>
           </div>
@@ -113,9 +113,9 @@ const Footer = () => {
 
         {/* Bottom Text */}
         <div className="mt-12 text-center text-gray-400 text-sm">
-          <p>PoomalaaWishthi</p>
-          <p>Info.poomalaawishthi@gmail.com</p>
-          <p>Full rights 2024 today</p>
+          <p>devoscape</p>
+          <p>Info@devoscape.com</p>
+          <p>All rights reserved © 2024</p>
         </div>
 
         {/* Copyright */}
